@@ -18,7 +18,10 @@
     $scope.callbacks = null;
     $scope.type = 'sortable';
     $scope.options = {
-      longTouch: false
+      longTouch: false,
+      waitTime: 800,
+      forceIOS: false,
+      pixDifference: 10
     };
     $scope.isDisabled = false;
 

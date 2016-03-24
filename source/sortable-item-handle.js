@@ -74,16 +74,20 @@
             isDisabled = false, // drag enabled
             escapeListen, // escape listen event
             isLongTouch = false; //long touch disabled.
+          // Added the values to be able to control thigns from outsides:
+          scope.itemScope = itemController.scope;
+          element.data('_scope', scope); // #144, work with angular debugInfoEnabled(false)
+
+          var waitTime = 800; //'sortableScope.options.waitTime';
+          var forceIOS = true; //'sortableScope.options.forceIOS';
+          var pixDifference = 2;//'sortableScope.options.pixDifference';
 
           hasTouch = 'ontouchstart' in $window;
-          isIOS = /iPad|iPhone|iPod/.test($window.navigator.userAgent) && !$window.MSStream;
+          isIOS = forceIOS || (/iPad|iPhone|iPod/.test($window.navigator.userAgent) && !$window.MSStream);
 
           if (sortableConfig.handleClass) {
             element.addClass(sortableConfig.handleClass);
           }
-
-          scope.itemScope = itemController.scope;
-          element.data('_scope', scope); // #144, work with angular debugInfoEnabled(false)
 
           scope.$watchGroup(['sortableScope.isDisabled', 'sortableScope.options.longTouch'],
               function (newValues) {
@@ -141,7 +145,7 @@
               if (!startPosition) {
                 startPosition = { clientX: eventObj.clientX, clientY: eventObj.clientY };
               }
-              if (Math.abs(eventObj.clientX - startPosition.clientX) + Math.abs(eventObj.clientY - startPosition.clientY) > 10) {
+              if (Math.abs(eventObj.clientX - startPosition.clientX) + Math.abs(eventObj.clientY - startPosition.clientY) > pixDifference) {
                 unbindMoveListen();
                 dragStart(event);
               }
@@ -563,8 +567,10 @@
            */
           longTouchStart = function(event) {
             longTouchTimer = $timeout(function() {
-              dragListen(event);
-            }, 500);
+              //dragListen(event);
+              dragStart(event);   // @SK: Start drag mode just after long-press
+
+            }, waitTime);
           };
 
           /**
